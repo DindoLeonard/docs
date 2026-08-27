@@ -1,0 +1,36 @@
+/*
+  All rules are scoped to /essentials/advanced/custom-components so the rest of the site is unaffected.
+  Remove this file to revert.
+
+  Mintlify exposes three kinds of styling hook:
+    1. data-component-part="..."  per-part hooks inside a built-in component
+    2. .card / .accordion / .tabs / .callout / .steps   root classes
+    3. #navbar / #sidebar / #content / #page-title      stable layout IDs
+  Scope any of them with html[data-current-path="..."].
+*/
+
+html[data-current-path="/essentials/advanced/custom-components"] [data-component-part="card-title"] {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+}
+
+/* The card icon is a masked SVG using bg-primary, so it needs
+   background-color, not color. */
+html[data-current-path="/essentials/advanced/custom-components"] [data-component-part="card-icon"] svg {
+  background-color: #b91c1c !important;
+}
+
+html[data-current-path="/essentials/advanced/custom-components"] .card {
+  border-left: 4px solid #16a34a !important;
+  border-radius: 0.25rem !important;
+}
+
+html[data-current-path="/essentials/advanced/custom-components"] [data-component-part="accordion-title"] {
+  color: #15803d;
+  font-weight: 600;
+}
+
+html[data-current-path="/essentials/advanced/custom-components"] h2 {
+  color: #15803d;
+}
