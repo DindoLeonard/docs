@@ -9,12 +9,54 @@
   },
   "favicon": "/favicon.svg",
   "navigation": {
-    "pages": [
+    "tabs": [
       {
-        "group": "Getting Started",
-        "pages": [
-          "index",
-          "quickstart"
+        "tab": "Guides",
+        "icon": "book-open",
+        "groups": [
+          {
+            "group": "Getting started",
+            "icon": "play",
+            "pages": [
+              "index",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Essentials",
+            "icon": "pen-to-square",
+            "pages": [
+              "essentials/pages",
+              "essentials/navigation",
+              {
+                "group": "Advanced",
+                "expanded": false,
+                "pages": [
+                  "essentials/advanced/snippets",
+                  "essentials/advanced/folder-structure"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "icon": "square-terminal",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api-reference/introduction"
+            ]
+          },
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api-reference/endpoints/get-project",
+              "api-reference/endpoints/create-project"
+            ]
+          }
         ]
       }
     ],

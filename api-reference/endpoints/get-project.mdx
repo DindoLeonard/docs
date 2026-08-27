@@ -1,0 +1,37 @@
+---
+title: "Get a project"
+description: "Retrieve a single project by ID"
+---
+
+This page lives at `api-reference/endpoints/get-project.mdx` — two folders deep —
+and is served at `/api-reference/endpoints/get-project`. Both folder names show
+up in the URL, in order.
+
+## Request
+
+```bash
+curl https://api.example.com/v1/projects/proj_123 \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+## Response
+
+```json
+{
+  "id": "proj_123",
+  "name": "Example project",
+  "created_at": "2026-01-15T09:30:00Z"
+}
+```
+
+## Parameters
+
+| Name | In | Type | Description |
+| --- | --- | --- | --- |
+| `id` | path | string | The project ID, prefixed with `proj_` |
+
+<Tip>
+  Placeholder content. In a real project this page would be generated from an
+  OpenAPI spec rather than written by hand — see
+  [API reference](/api-reference/introduction).
+</Tip>

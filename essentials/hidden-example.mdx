@@ -1,0 +1,43 @@
+---
+title: "A page that isn't in the sidebar"
+description: "Proof that navigation is opt-in, not automatic"
+hidden: true
+---
+
+You reached this page by URL. Now look at the sidebar — there is no entry for it
+anywhere, in either tab.
+
+That is because `essentials/hidden-example` is **not listed in `docs.json`**.
+The file exists, Mintlify built it, and `/essentials/hidden-example` resolves
+normally. It simply has no navigation entry, because nothing asked for one.
+
+## Why this matters
+
+Two separate things are going on, and it is easy to assume they are one:
+
+- **Creating the file** publishes a URL.
+- **Listing the path in `docs.json`** puts a link in the sidebar.
+
+So dropping a `.mdx` file into the project does not quietly add it to your
+navigation, and deleting a `docs.json` entry does not delete the page.
+
+## Two ways to keep a page out of the sidebar
+
+<Steps>
+  <Step title="Leave it out of docs.json">
+    What this page does. The page stays reachable by direct link — useful for
+    landing pages you link to from elsewhere, or drafts you want to share.
+  </Step>
+  <Step title="Set hidden: true in frontmatter">
+    Also set on this page. Use it when a path *is* listed in `docs.json` but you
+    want it out of the sidebar anyway.
+  </Step>
+</Steps>
+
+<Tip>
+  If you want a draft that does not build at all, that is a third mechanism:
+  `.mintignore`. This project's copy already ignores `drafts/` and any
+  `*.draft.mdx` file.
+</Tip>
+
+[Back to Pages](/essentials/pages)

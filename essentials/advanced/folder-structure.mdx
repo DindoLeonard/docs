@@ -1,0 +1,104 @@
+---
+title: "Folder structure"
+description: "Every file in this project, mapped to its navigation entry and URL"
+icon: "folder-tree"
+mode: "wide"
+---
+
+This page is the reference the rest of the site builds toward: the whole
+project, and what each file turns into.
+
+<Tip>
+  This page uses `mode: "wide"` in its frontmatter, which is why it renders
+  wider than the others. Compare it to [Navigation](/essentials/navigation) —
+  same site, different layout, one line of frontmatter apart.
+</Tip>
+
+## The tree
+
+```
+docs/
+├── docs.json                              # config + navigation. The CLI runs from this folder.
+├── index.mdx                              # → /
+├── quickstart.mdx                         # → /quickstart
+├── favicon.svg
+├── logo/
+│   ├── light.svg
+│   └── dark.svg
+│
+├── essentials/
+│   ├── pages.mdx                          # → /essentials/pages
+│   ├── navigation.mdx                     # → /essentials/navigation
+│   ├── hidden-example.mdx                 # → /essentials/hidden-example  (not in docs.json)
+│   └── advanced/
+│       ├── snippets.mdx                   # → /essentials/advanced/snippets
+│       └── folder-structure.mdx           # → /essentials/advanced/folder-structure
+│
+├── api-reference/
+│   ├── introduction.mdx                   # → /api-reference/introduction
+│   └── endpoints/
+│       ├── get-project.mdx                # → /api-reference/endpoints/get-project
+│       └── create-project.mdx             # → /api-reference/endpoints/create-project
+│
+├── snippets/
+│   └── demo-note.mdx                      # no URL — imported only
+│
+├── .mintignore                            # drafts/ and *.draft.mdx never build
+├── AGENTS.md                              # auto-ignored
+├── README.md                              # auto-ignored
+└── LICENSE                                # auto-ignored
+```
+
+## File to navigation entry to URL
+
+| File on disk | Entry in `docs.json` | Served at | Sidebar location |
+| --- | --- | --- | --- |
+| `index.mdx` | `"index"` | `/` | Guides / Getting started |
+| `quickstart.mdx` | `"quickstart"` | `/quickstart` | Guides / Getting started |
+| `essentials/pages.mdx` | `"essentials/pages"` | `/essentials/pages` | Guides / Essentials |
+| `essentials/navigation.mdx` | `"essentials/navigation"` | `/essentials/navigation` | Guides / Essentials |
+| `essentials/advanced/snippets.mdx` | `"essentials/advanced/snippets"` | `/essentials/advanced/snippets` | Guides / Essentials / Advanced |
+| `essentials/advanced/folder-structure.mdx` | `"essentials/advanced/folder-structure"` | `/essentials/advanced/folder-structure` | Guides / Essentials / Advanced |
+| `essentials/hidden-example.mdx` | *(none)* | `/essentials/hidden-example` | **Nowhere** |
+| `api-reference/introduction.mdx` | `"api-reference/introduction"` | `/api-reference/introduction` | API reference / Overview |
+| `api-reference/endpoints/get-project.mdx` | `"api-reference/endpoints/get-project"` | `/api-reference/endpoints/get-project` | API reference / Endpoints |
+| `api-reference/endpoints/create-project.mdx` | `"api-reference/endpoints/create-project"` | `/api-reference/endpoints/create-project` | API reference / Endpoints |
+| `snippets/demo-note.mdx` | *(none)* | *(none, 404)* | Nowhere |
+
+## What the table shows
+
+- **The middle column is just the first column without `.mdx`.** That is the
+  entire path rule.
+- **The third column is the middle column with a leading slash.** Folders become
+  URL segments; nothing else does.
+- **`index.mdx` is the exception**, mapping to `/` rather than `/index`. The same
+  applies inside a folder: `guides/index.mdx` would serve `/guides`.
+- **Column four is unrelated to columns two and three.** "Guides", "Essentials",
+  and "Advanced" are labels in `docs.json`. Rename any of them and no URL moves.
+- **Two rows have no navigation entry** and behave completely differently from
+  each other: one is a working page with no sidebar link, the other has no URL
+  at all.
+
+## Conventions worth copying
+
+Mintlify enforces almost none of this — a flat folder of 200 `.mdx` files would
+build fine. These are the habits that keep a growing site manageable:
+
+<Steps>
+  <Step title="One folder per tab, named after it">
+    The "API reference" tab keeps its pages in `api-reference/`. Since tab names
+    are invisible to URLs, the folder is what makes `/api-reference/...` happen.
+  </Step>
+  <Step title="Let folders mirror groups, one level down">
+    `essentials/advanced/` matches the nested "Advanced" group. Someone reading
+    the sidebar can guess the file path, and the other way around.
+  </Step>
+  <Step title="Keep shared content in /snippets/">
+    Files there never become pages, so the folder stays unambiguous.
+  </Step>
+  <Step title="Put images in /images/ and reference them from the root">
+    This project has no images yet, but `/images/diagram.png` in an `.mdx` file
+    resolves from the project root, the same way `/logo/light.svg` does in
+    `docs.json`.
+  </Step>
+</Steps>
