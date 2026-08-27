@@ -1,0 +1,141 @@
+---
+title: "Custom components"
+description: "What you can build, restyle, and what Mintlify will not let you change"
+icon: "puzzle"
+---
+
+Every example on this page is live. If a section renders, the technique works
+on this version of Mintlify — verified against `mint dev` 4.2.831.
+
+import { UsesBuiltInCard, UsesSiblingImport, UsesPlainHtmlOnly } from "/snippets/custom-callout.jsx";
+import { StatusBadge } from "/snippets/status-badge.jsx";
+import { Counter } from "/snippets/counter.jsx";
+import ParamNote from "/snippets/param-note.mdx";
+
+export const PageCard = ({ title, badge = "New", children }) => (
+  <Card title={title} icon="sparkles">
+    <StatusBadge label={badge} tone="good" />
+    <div>{children}</div>
+  </Card>
+);
+
+## You can create new components
+
+Two places to define one: a `.jsx` file in `/snippets/`, or an `export const`
+at the top of the page itself. Both compile to real React.
+
+A snippet component built from plain HTML and `mint-` prefixed Tailwind:
+
+<UsesPlainHtmlOnly />
+
+## Built-in components resolve inside your snippets
+
+`UsesBuiltInCard` wraps the built-in `Card` without importing it. MDX resolves
+JSX names through its own component scope, and the built-ins live there:
+
+<UsesBuiltInCard title="Card, used inside a snippet, never imported" />
+
+<Warning>
+  That same scope is a trap. A component referencing another component **in the
+  same file** fails at runtime with `Expected component X to be defined` unless
+  you import it explicitly — lexical scope does not apply.
+</Warning>
+
+## Components accept props and default values
+
+<UsesSiblingImport />
+
+<StatusBadge label="imported into this page, used directly" tone="good" />
+
+## Custom components can hold React state
+
+Hooks are pre-injected — `useState`, `useEffect`, `useRef`, `useCallback`,
+`useMemo`, `useContext`, and `useReducer` need no import. Click it:
+
+<Counter start={5} step={3} />
+
+## You cannot add parameters to a built-in
+
+Unknown props are dropped silently — no error, no warning, and nothing reaches
+the DOM. Passing `badge="Beta"` to the real `Card` does nothing.
+
+The workaround is to wrap it. `PageCard` below takes a `badge` prop the real
+`Card` has no concept of, and renders it:
+
+<PageCard title="A Card with a badge param the real Card lacks" badge="Beta">
+  Wrap the built-in, consume your new prop, translate it into markup.
+</PageCard>
+
+## Props interpolate everywhere except inline code spans
+
+<ParamNote product="Programa" version="4.2.831" />
+
+Text and fenced code blocks both substitute. An inline code span does not — it
+renders the literal braces, as shown above.
+
+## You can restyle any built-in
+
+Add a `.css` file anywhere in the content directory. Mintlify exposes three
+kinds of hook, and this page's `style.css` uses all three:
+
+<Steps>
+  <Step title="Per-part attributes">
+    `data-component-part="..."` targets one piece of a component. There are 27
+    of them, including `card-title`, `card-icon`, `accordion-button`,
+    `tab-button`, `callout-icon`, `step-number`, and `code-block-root`.
+  </Step>
+  <Step title="Root classes">
+    `.card`, `.accordion`, `.tabs`, `.callout`, and `.steps`.
+  </Step>
+  <Step title="Layout IDs">
+    `#navbar`, `#sidebar`, `#content`, `#page-title`, `#table-of-contents`.
+  </Step>
+</Steps>
+
+Scope a rule to one page with `html[data-current-path="..."]`, which is how
+every rule here avoids leaking into the rest of the site.
+
+The uppercase card titles, red card icons, green card borders, and green
+accordion title below are all CSS overrides on unmodified built-ins:
+
+<Accordion title="Restyled accordion title">
+  The title colour and weight come from
+  `[data-component-part="accordion-title"]`.
+</Accordion>
+
+<Columns cols={2}>
+  <Card title="Restyled card" icon="box">Border and title from CSS.</Card>
+  <Card title="Also restyled" icon="box">No component code changed.</Card>
+</Columns>
+
+<Tabs>
+  <Tab title="Gotcha: CSS is read at startup">
+    MDX hot-reloads. CSS does not — `mint dev` reads `.css` files once, at
+    boot. Edit a stylesheet and the page will keep serving the old one, which
+    looks exactly like a rule that does not work. Restart the server.
+  </Tab>
+  <Tab title="Gotcha: icons are masked SVGs">
+    Card icons paint with `bg-primary`, so `color` does nothing. Set
+    `background-color` on the `svg` instead.
+  </Tab>
+  <Tab title="Gotcha: Tailwind gets prefixed">
+    Mintlify rewrites Tailwind classes to `mint-*` and only compiles what it
+    finds statically. A class assembled by template-literal interpolation is
+    never prefixed and silently does nothing.
+  </Tab>
+</Tabs>
+
+<Note>
+  Mintlify documents these styling hooks as subject to change. Treat CSS
+  overrides as something an upgrade can break.
+</Note>
+
+## Limits worth knowing
+
+- No external npm packages
+- Named exports only — `export default` is unsupported
+- Arrow functions only — the `function` keyword is unsupported
+- No `.json` imports, no `React.lazy`, no dynamic `import()`
+- Component names must be capitalized, or MDX treats the tag as raw HTML
+- Cross-snippet imports render in `mint dev` but are documented as
+  unsupported. Import into the parent page instead.
