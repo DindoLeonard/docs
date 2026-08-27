@@ -1,0 +1,131 @@
+---
+title: "Navigation"
+description: "How docs.json turns file paths into tabs, groups, and URLs"
+icon: "sitemap"
+---
+
+`docs.json` is the only place navigation is defined. There is no file-system
+convention that auto-builds a sidebar — you list paths, and Mintlify renders
+exactly what you listed, in the order you listed it.
+
+## The three rules
+
+<Steps>
+  <Step title="A pages entry is a file path">
+    Paths are relative to the folder holding `docs.json`, with the extension
+    dropped. `"essentials/navigation"` means `essentials/navigation.mdx`.
+  </Step>
+  <Step title="The URL mirrors that path">
+    `essentials/navigation.mdx` is served at `/essentials/navigation`. Folders
+    become URL segments.
+  </Step>
+  <Step title="Tab and group names never touch the URL">
+    This page sits under a tab called "Guides" and a group called "Essentials",
+    yet neither word appears in the address bar. Only folders do.
+  </Step>
+</Steps>
+
+<Tip>
+  Rule three is the one that surprises people. Because labels are invisible to
+  the URL, the convention is to name your folder after the tab — which is why
+  the API reference tab keeps its pages in an `api-reference/` folder.
+</Tip>
+
+## The navigation block behind this site
+
+```json
+"navigation": {
+  "tabs": [
+    {
+      "tab": "Guides",
+      "icon": "book-open",
+      "groups": [
+        {
+          "group": "Getting started",
+          "icon": "play",
+          "pages": ["index", "quickstart"]
+        },
+        {
+          "group": "Essentials",
+          "icon": "pen-to-square",
+          "pages": [
+            "essentials/pages",
+            "essentials/navigation",
+            {
+              "group": "Advanced",
+              "expanded": false,
+              "pages": [
+                "essentials/advanced/snippets",
+                "essentials/advanced/folder-structure"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tab": "API reference",
+      "icon": "square-terminal",
+      "groups": [
+        { "group": "Overview", "pages": ["api-reference/introduction"] },
+        {
+          "group": "Endpoints",
+          "pages": [
+            "api-reference/endpoints/get-project",
+            "api-reference/endpoints/create-project"
+          ]
+        }
+      ]
+    }
+  ],
+  "global": {
+    "anchors": [
+      { "anchor": "Documentation", "href": "https://mintlify.com/docs", "icon": "book-open-cover" },
+      { "anchor": "Blog", "href": "https://mintlify.com/blog", "icon": "newspaper" }
+    ]
+  }
+}
+```
+
+Two details in there are worth pointing out:
+
+- Inside the **Essentials** group, `pages` holds two plain strings and then an
+  object. That object is a **nested group** — a group living inside another
+  group's `pages` array. It renders as the collapsible "Advanced" section.
+- `"expanded": false` collapses that nested group by default. Top-level groups
+  always start expanded; only nested ones respect this flag.
+
+## Picking a root pattern
+
+The `navigation` object takes **one** organizing element at the root. Pick the
+one that matches your site:
+
+| Pattern | What it renders | Good for |
+| --- | --- | --- |
+| `groups` | A single sidebar of collapsible sections | One product, one audience |
+| `tabs` | Parallel top-level sections, each with its own sidebar | Guides plus an API reference |
+| `anchors` | Persistent links, internal or external | Status page, community, changelog |
+| `dropdowns` | An expandable menu in the sidebar header | Switching between reference sets |
+| `products` | A product switcher across separate doc sets | Payments, Identity, Analytics |
+| `versions` | A version switcher | v1 and v2 side by side |
+| `languages` | A language switcher | Translated docs |
+
+Each level then holds one kind of child. Tabs can contain groups or anchors;
+anchors can contain tabs or groups; groups contain pages or more groups.
+**Mixing two child types at the same level fails validation** — a group cannot
+hold `pages` and `tabs` at once.
+
+## Other properties you will reach for
+
+- `root` — marks a landing page for a group, so clicking the group title opens it.
+- `expanded` — the default open/closed state of a nested group.
+- `directory` — auto-lists a group's children as `"accordion"`, `"card"`, or `"none"`.
+- `icon` and `tag` — work on groups and tabs, not just pages.
+- `global.anchors` — links pinned to every page, in every tab. The two at the
+  bottom of this sidebar come from there.
+- `openapi` — point a group at a spec file and Mintlify generates the endpoint
+  pages for you.
+
+<Card title="See the whole tree" icon="folder-tree" href="/essentials/advanced/folder-structure">
+  Every file in this project mapped to its navigation entry and final URL.
+</Card>

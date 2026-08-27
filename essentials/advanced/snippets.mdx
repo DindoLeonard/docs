@@ -1,0 +1,64 @@
+---
+title: "Reusable snippets"
+description: "Write content once, import it into many pages"
+icon: "recycle"
+---
+
+import DemoNote from "/snippets/demo-note.mdx";
+
+A snippet is an `.mdx`, `.md`, or `.jsx` file you import into pages instead of
+publishing on its own. It is how you avoid copy-pasting the same install steps
+or the same warning across a dozen files.
+
+## A live one
+
+Everything in the block below comes from a different file:
+
+<DemoNote />
+
+That text is stored in `snippets/demo-note.mdx`. This page renders it with two
+lines — an import at the top of the file, and the component where the content
+should appear:
+
+```mdx
+import DemoNote from "/snippets/demo-note.mdx";
+
+<DemoNote />
+```
+
+Try visiting `/snippets/demo-note` directly: it 404s. Snippets have no URL of
+their own.
+
+## The rules
+
+<Steps>
+  <Step title="Anything in /snippets/ is a snippet">
+    Mintlify treats every file in that folder as a snippet automatically, used
+    or not, and never renders it as a page.
+  </Step>
+  <Step title="Import by absolute or relative path">
+    Absolute paths start at the project root and begin with a slash. Relative
+    paths start with `./` or `../` and resolve from the importing file. Both of
+    these reach the same file from this page:
+
+    ```mdx
+    import DemoNote from "/snippets/demo-note.mdx";
+    ```
+
+    ```mdx
+    import DemoNote from "../../snippets/demo-note.mdx";
+    ```
+
+    Absolute is easier to keep working when you move pages between folders.
+  </Step>
+  <Step title="The component name must be capitalized">
+    `<DemoNote />` renders. A lowercase tag does not — MDX reads it as a plain
+    HTML element, so it silently produces nothing.
+  </Step>
+</Steps>
+
+<Tip>
+  Snippets can live outside `/snippets/` too — any path works with an import.
+  The folder is just the convention, and the one place files are treated as
+  snippets without being imported anywhere.
+</Tip>

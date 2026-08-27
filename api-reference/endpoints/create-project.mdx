@@ -1,0 +1,37 @@
+---
+title: "Create a project"
+description: "Create a new project"
+---
+
+The sibling of [Get a project](/api-reference/endpoints/get-project), in the same
+folder and the same navigation group.
+
+## Request
+
+```bash
+curl -X POST https://api.example.com/v1/projects \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Example project"}'
+```
+
+## Response
+
+```json
+{
+  "id": "proj_456",
+  "name": "Example project",
+  "created_at": "2026-01-15T09:31:00Z"
+}
+```
+
+## Body
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `name` | string | yes | Display name for the project |
+
+<Tip>
+  Placeholder content, same as its sibling. The point of these two pages is the
+  folder nesting, not the API.
+</Tip>

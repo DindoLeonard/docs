@@ -1,0 +1,71 @@
+---
+title: "API reference"
+description: "Why this content sits in its own tab and its own folder"
+icon: "square-terminal"
+---
+
+You are in the second tab. The sidebar changed completely: none of the Guides
+groups are here, and none of these groups appear over there. That is what a tab
+does — it swaps the entire sidebar.
+
+## Tabs and folders are separate things
+
+The tab is called "API reference" and the pages live in `api-reference/`. Those
+two facts are unrelated, and only one of them affects the URL:
+
+- The **tab name** is a label in `docs.json`. Rename it to "API" and nothing else
+  changes.
+- The **folder name** is what puts `/api-reference/` in front of every URL here.
+
+Keeping them matching is a convention, not a requirement. It is worth following
+because it means a reader who sees `/api-reference/endpoints/get-project` can
+guess exactly where the file lives.
+
+## Groups inside a tab
+
+This tab holds two groups, "Overview" and "Endpoints":
+
+```json
+{
+  "tab": "API reference",
+  "icon": "square-terminal",
+  "groups": [
+    { "group": "Overview", "pages": ["api-reference/introduction"] },
+    {
+      "group": "Endpoints",
+      "pages": [
+        "api-reference/endpoints/get-project",
+        "api-reference/endpoints/create-project"
+      ]
+    }
+  ]
+}
+```
+
+The endpoint pages sit one folder deeper, in `api-reference/endpoints/`, so
+their paths carry both segments. Nesting folders and nesting groups are
+independent — you could put all four files side by side and still show two
+groups, or nest the folders five deep and show none.
+
+## Writing endpoints by hand is the fallback
+
+The two endpoint pages here are hand-written to demonstrate the folder nesting.
+In a real project you would usually not write them at all. Point a navigation
+element at an OpenAPI spec and Mintlify generates a page per endpoint:
+
+```json
+{
+  "group": "Endpoints",
+  "openapi": "/openapi.json"
+}
+```
+
+<Tip>
+  The same `openapi` property works on tabs, anchors, and groups. There is a
+  matching `sdk` property that generates reference docs from build artifacts —
+  `typedoc`, `docfx`, `javadoc`, `sphinx`, or `phpdoc`.
+</Tip>
+
+<Card title="See both endpoint pages" icon="list" href="/api-reference/endpoints/get-project">
+  Two levels of folder nesting, one navigation group.
+</Card>

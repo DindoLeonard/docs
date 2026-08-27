@@ -1,0 +1,63 @@
+---
+title: "Creating pages and frontmatter"
+sidebarTitle: "Pages"
+description: "How a file becomes a page, and what frontmatter controls"
+icon: "file-lines"
+tag: "NEW"
+---
+
+A page is a `.mdx` or `.md` file. Nothing else is required — no registration
+step, no build manifest. Drop a file in the project and Mintlify can serve it.
+
+## This page's own frontmatter
+
+Everything between the two `---` lines at the top of the file is YAML
+frontmatter. Here is the exact block that produced the page you are reading:
+
+```yaml
+---
+title: "Creating pages and frontmatter"
+sidebarTitle: "Pages"
+description: "How a file becomes a page, and what frontmatter controls"
+icon: "file-lines"
+tag: "NEW"
+---
+```
+
+Look at the sidebar: the entry says **Pages**, not the full title. That is
+`sidebarTitle` doing its job, and the green **NEW** badge beside it is `tag`.
+
+<Tip>
+  Every frontmatter field is optional — including `title`. If you leave it out,
+  Mintlify derives one from the filename: `guides/getting-started.mdx` becomes
+  "Getting started".
+</Tip>
+
+## Fields worth knowing
+
+| Field | What it does |
+| --- | --- |
+| `title` | Page heading, browser tab, and default sidebar label |
+| `description` | Subtitle under the heading; also the SEO meta description |
+| `sidebarTitle` | Shorter label for the sidebar when `title` is long |
+| `icon` | Icon beside the sidebar entry (Font Awesome, Lucide, Tabler, a URL, or a file in the project) |
+| `tag` | Small badge next to the title, like the `NEW` on this page |
+| `mode` | Layout: `default`, `wide`, `custom`, `frame`, `center`, or `assistant` |
+| `hidden` | `true` removes it from the sidebar but keeps the URL working |
+| `searchable` | `false` excludes the page from site search |
+| `url` | Turns the entry into a link out to an external address |
+| `deprecated` | Adds a "deprecated" label to the page |
+
+## Files are not pages until you say so
+
+Creating the file is only half of it. A page appears in the sidebar **only when
+its path is listed in `docs.json`**. That is deliberate: it lets you keep drafts
+and work-in-progress in the repo without publishing them to the navigation.
+
+To see this for yourself, visit [/essentials/hidden-example](/essentials/hidden-example).
+That page exists and loads normally, but you will not find it anywhere in the
+sidebar — because it is not in `docs.json`.
+
+<Card title="Next: how navigation works" icon="sitemap" href="/essentials/navigation">
+  See how those paths in `docs.json` build the tabs and groups around this page.
+</Card>
