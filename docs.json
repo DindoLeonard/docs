@@ -34,7 +34,8 @@
                 "pages": [
                   "essentials/advanced/snippets",
                   "essentials/advanced/folder-structure",
-                  "essentials/advanced/custom-components"
+                  "essentials/advanced/custom-components",
+                  "essentials/advanced/customizing-blocks"
                 ]
               }
             ]

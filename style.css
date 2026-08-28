@@ -34,3 +34,40 @@ html[data-current-path="/essentials/advanced/custom-components"] [data-component
 html[data-current-path="/essentials/advanced/custom-components"] h2 {
   color: #15803d;
 }
+
+/* ---------------------------------------------------------------------------
+   Support for the StatusCallout component (snippets/status-callout.jsx).
+   Not page-scoped: a class the component itself relies on, so it must apply
+   wherever the component is used.
+   --------------------------------------------------------------------------- */
+
+.status-callout-meta {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  opacity: 0.75;
+}
+
+/* ---------------------------------------------------------------------------
+   Single-variant restyling demo for /essentials/advanced/customizing-blocks.
+   Scoped so the Danger callout looks normal everywhere else on the site.
+   `data-callout-type` is the variant discriminator: note, info, tip, check,
+   warning, danger, or callout for the generic component.
+   `!important` is required — typed callouts carry hard-coded utility classes.
+   --------------------------------------------------------------------------- */
+
+html[data-current-path="/essentials/advanced/customizing-blocks"] [data-callout-type="danger"] {
+  background: #fff1f2 !important;
+  border-color: #ff0055 !important;
+  border-width: 2px !important;
+  border-radius: 0 !important;
+}
+
+html[data-current-path="/essentials/advanced/customizing-blocks"].dark [data-callout-type="danger"],
+html.dark[data-current-path="/essentials/advanced/customizing-blocks"] [data-callout-type="danger"] {
+  background: #1a0000 !important;
+}
+
+/* Recolour the built-in icon: it is an inline SVG inheriting currentColor. */
+html[data-current-path="/essentials/advanced/customizing-blocks"] [data-callout-type="danger"] [data-component-part="callout-icon"] {
+  color: #ff0055 !important;
+}
