@@ -1,0 +1,240 @@
+---
+title: "Customize a block"
+description: "Restyle a built-in component and give it parameters it does not have"
+icon: "palette"
+---
+
+import { StatusCallout } from "/snippets/status-callout.jsx";
+
+Mintlify's built-in components take a fixed set of props and come with fixed
+styling. You cannot edit either one directly, but you can get most of the way
+there with two techniques that combine well.
+
+<Columns cols={2}>
+  <Card title="Restyle it" icon="paintbrush">
+    CSS in any `.css` file. Changes how a block looks everywhere, or on one
+    page, without touching content.
+  </Card>
+  <Card title="Reparameterize it" icon="sliders">
+    Wrap the block in your own component. Adds props the built-in has no
+    concept of.
+  </Card>
+</Columns>
+
+## Start with docs.json
+
+Before writing a selector, check whether configuration already covers it.
+`docs.json` handles the whole site at once: `theme` (nine to choose from),
+`colors`, `fonts`, `icons.library`, `background`, and `appearance`.
+
+What `docs.json` **cannot** do is target one component. There is no key that
+reaches only the Danger callout. For that you need CSS.
+
+## Restyle one variant of a block
+
+Callouts all share the `.callout` class, so a rule on `.callout` hits every
+one of them. To reach a single variant, use `data-callout-type`, which carries
+`note`, `info`, `tip`, `check`, `warning`, `danger`, or `callout` for the
+generic component.
+
+```css style.css
+[data-callout-type="danger"] {
+  background: #1a0000 !important;
+  border-color: #ff0055 !important;
+  border-radius: 0 !important;
+}
+```
+
+That rule is live on this page. This is a stock `<Danger>` with no props —
+the square corners and pink border come entirely from CSS:
+
+<Danger>A stock Danger callout, restyled by CSS alone.</Danger>
+
+Compare it with a callout the rule does not target:
+
+<Warning>Untouched, because the selector only matches `danger`.</Warning>
+
+<Warning>
+  `!important` is not optional here. Typed callouts carry hard-coded utility
+  classes such as `border-red-200 bg-red-50`, so an unweighted rule loses on
+  specificity and silently does nothing.
+</Warning>
+
+### Replace the icon
+
+A typed callout's icon is an inline SVG that inherits `currentColor`, so
+recolouring it is one line:
+
+```css Recolour
+[data-callout-type="danger"] [data-component-part="callout-icon"] {
+  color: #ff0055 !important;
+}
+```
+
+Swapping the glyph takes two: hide the SVG, then draw your own as a mask.
+
+```css Replace
+[data-callout-type="danger"] [data-component-part="callout-icon"] svg {
+  display: none;
+}
+[data-callout-type="danger"] [data-component-part="callout-icon"]::before {
+  content: "";
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  background-color: #ff0055;
+  mask: url("/icons/skull.svg") no-repeat center / contain;
+}
+```
+
+<Note>
+  Card icons work differently. They are already masked SVGs painted with
+  `bg-primary`, so `color` does nothing and you set `background-color`
+  instead. Check which kind you have before guessing.
+</Note>
+
+### Handle dark mode
+
+Variant classes ship `dark:` pairs, so a single override only looks correct in
+one appearance. Write both:
+
+```css
+[data-callout-type="danger"] { background: #fff1f2 !important; }
+.dark [data-callout-type="danger"] { background: #1a0000 !important; }
+```
+
+### Scope it to one page
+
+Every rule on this page is scoped so it cannot leak into the rest of the site:
+
+```css
+html[data-current-path="/essentials/advanced/customizing-blocks"] .callout { }
+```
+
+Use `^=` to match a whole section, such as
+`html[data-current-path^="/api-reference/"]`.
+
+## Add parameters to a block
+
+Built-ins ignore props they do not declare. Passing `owner="platform"` to a
+`Card` produces no error, no warning, and nothing in the DOM — it is dropped.
+
+The way around it is to wrap the built-in in a component of your own, consume
+your new props there, and translate them into props the built-in does accept.
+
+<Steps>
+  <Step title="Create the component">
+    Put it in `/snippets/` as a `.jsx` file. Named exports and arrow functions
+    only.
+
+    ```jsx snippets/status-callout.jsx
+    export const StatusCallout = ({ level = "info", owner, reviewed, children }) => {
+      const levels = {
+        info: { color: "#3b82f6", icon: "circle-info", label: "Stable" },
+        caution: { color: "#f59e0b", icon: "triangle-exclamation", label: "Changing soon" },
+        critical: { color: "#ef4444", icon: "skull", label: "Deprecated" },
+      };
+      const cfg = levels[level] || levels.info;
+      return (
+        <Callout icon={cfg.icon} color={cfg.color}>
+          <strong>{cfg.label}</strong>
+          {children}
+          {(owner || reviewed) && (
+            <div className="status-callout-meta">
+              {owner && <span>Owner: {owner}</span>}
+              {owner && reviewed && <span> · </span>}
+              {reviewed && <span>Last reviewed: {reviewed}</span>}
+            </div>
+          )}
+        </Callout>
+      );
+    };
+    ```
+
+    `Callout` needs no import — built-ins resolve through MDX's component
+    scope, which snippets share.
+
+    Note that `levels` is declared *inside* the component. Nothing declared at
+    the top level of a snippet file is visible to a component in that same
+    file, and exporting it does not help — both `const LEVELS = {}` and
+    `export const LEVELS = {}` throw `ReferenceError` at render, because each
+    export is compiled in its own scope. Declare helpers inside the component,
+    or import them from another file.
+  </Step>
+
+  <Step title="Import it on the page">
+    ```mdx
+    import { StatusCallout } from "/snippets/status-callout.jsx";
+    ```
+  </Step>
+
+  <Step title="Use your new parameters">
+    ```mdx
+    <StatusCallout level="critical" owner="Platform" reviewed="2026-08-01">
+      This endpoint is scheduled for removal.
+    </StatusCallout>
+    ```
+  </Step>
+</Steps>
+
+### The result
+
+All three are the same component, driven entirely by the `level` parameter —
+which the built-in `Callout` has no concept of:
+
+<StatusCallout level="info" owner="Docs" reviewed="2026-08-28">
+  Default level. Renders as a blue callout.
+</StatusCallout>
+
+<StatusCallout level="caution" owner="Platform">
+  `owner` with no `reviewed` date. The separator is omitted automatically.
+</StatusCallout>
+
+<StatusCallout level="critical" owner="Platform" reviewed="2026-08-01">
+  Both parameters, and a `skull` icon selected by the component.
+</StatusCallout>
+
+<StatusCallout>
+  No parameters at all — defaults apply and the metadata line disappears.
+</StatusCallout>
+
+Why this pattern is worth the indirection:
+
+- One place to change how every status notice looks
+- Writers pass `level="critical"`, not a hex code and an icon name
+- The component validates input by construction — an unknown `level` falls
+  back to `info` rather than rendering broken
+
+## Where this approach runs out
+
+<Tabs>
+  <Tab title="Structure">
+    CSS restyles and hides, but cannot reorder markup or insert real elements.
+    `::before` content is decorative — it is not in the accessibility tree and
+    cannot hold a link.
+  </Tab>
+  <Tab title="The web editor">
+    Snippets are not supported in the web editor, so `<StatusCallout />` is
+    not insertable from the `/` menu. Writers can type it in source mode
+    (<kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>). `.jsx` and `.css`
+    files are also hidden in the file tree until you enable **Show all files**.
+  </Tab>
+  <Tab title="Local dev">
+    Neither `.css` files nor `.jsx` snippets hot-reload — `mint dev` reads
+    both at boot. Edit either one and the page keeps serving the old version,
+    which looks exactly like a rule or component that does not work. A `.jsx`
+    edit fails especially quietly: the component renders as nothing, with no
+    console error. Restart the server.
+  </Tab>
+  <Tab title="Stability">
+    Mintlify documents its styling hooks as subject to change, and
+    `data-callout-type` is not in that documented list at all. Keep overrides
+    in one commented block so an upgrade is quick to diagnose.
+  </Tab>
+</Tabs>
+
+## Related topics
+
+- [Custom components](/essentials/advanced/custom-components) — what is and is
+  not possible, with every technique rendered live
+- [Reusable snippets](/essentials/advanced/snippets) — importing content

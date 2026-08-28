@@ -125,6 +125,40 @@ accordion title below are all CSS overrides on unmodified built-ins:
   </Tab>
 </Tabs>
 
+## You can restyle a single variant
+
+A rule on `.callout` hits every callout on the site. To reach just one kind,
+use `data-callout-type` — it carries `note`, `info`, `tip`, `check`, `warning`,
+`danger`, or `callout` for the generic component.
+
+```css
+[data-callout-type="danger"] {
+  background: #1a0000 !important;
+  border-color: #ff0055 !important;
+}
+```
+
+`!important` is required: typed callouts carry hard-coded utility classes such
+as `border-red-200 bg-red-50`, so an unweighted rule loses on specificity and
+does nothing. Those classes ship `dark:` pairs too, so override both
+appearances or your restyle is only half-right.
+
+<Warning>
+  `data-callout-type` is **not** in Mintlify's documented selector list. It
+  works, but it is undocumented surface — more likely than most to move.
+</Warning>
+
+Two related traps found while testing this:
+
+- The docs state the typed callouts (`Note`, `Warning`, `Danger`, and so on)
+  "only accept `children`". An `icon` prop actually does change the glyph, but
+  the icon then renders in the default grey because the custom-icon path drops
+  the variant's colour. Half-working; use the generic `Callout` instead, which
+  supports `icon` and `color` properly.
+- The generic `Callout` is built on `--callout-light-bg-color` and friends.
+  Setting those variables on a *typed* callout does nothing — typed variants
+  do not read them.
+
 <Note>
   Mintlify documents these styling hooks as subject to change. Treat CSS
   overrides as something an upgrade can break.
@@ -139,3 +173,8 @@ accordion title below are all CSS overrides on unmodified built-ins:
 - Component names must be capitalized, or MDX treats the tag as raw HTML
 - Cross-snippet imports render in `mint dev` but are documented as
   unsupported. Import into the parent page instead.
+
+## Related topics
+
+- [Customize a block](/essentials/advanced/customizing-blocks) — a step-by-step
+  guide to restyling a built-in and giving it new parameters
